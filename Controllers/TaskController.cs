@@ -4,84 +4,85 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TaskManager.Models;
 
 namespace TaskManager.Controllers
 {
     public class TaskController : Controller
     {
-        // GET: TaskController
+        private static IList<TaskModel> tasks = new List<TaskModel>() 
+        {
+            new TaskModel(){TaskId = 1, Name = "Wizyta u lekarza", Description = "Godzina 17:00", Done = false},
+            new TaskModel(){TaskId = 2, Name = "Zrobić obiad", Description = "Pierogi", Done = false}
+
+        };
+        // GET: Task
         public ActionResult Index()
         {
-            return View();
+            return View(tasks.Where(x => !x.Done));
         }
 
-        // GET: TaskController/Details/5
+        // GET: Task/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            return View(tasks.FirstOrDefault(x => x.TaskId == id));
         }
 
-        // GET: TaskController/Create
+        // GET: Task/Create
         public ActionResult Create()
         {
-            return View();
+            return View(new TaskModel());
         }
 
-        // POST: TaskController/Create
+        // POST: Task/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(TaskModel taskModel)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            taskModel.TaskId = tasks.Count + 1;
+            tasks.Add(taskModel);
+
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: TaskController/Edit/5
+        // GET: Task/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            return View(tasks.FirstOrDefault(x => x.TaskId == id));
         }
 
-        // POST: TaskController/Edit/5
+        // POST: Task/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, TaskModel taskModel)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            TaskModel task = tasks.FirstOrDefault(x => x.TaskId == id);
+            task.Name = taskModel.Name;
+            task.Description = taskModel.Description;
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: TaskController/Delete/5
+        // GET: Task/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            return View(tasks.FirstOrDefault(x => x.TaskId == id));
         }
 
-        // POST: TaskController/Delete/5
+        // POST: Task/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id, TaskModel taskModel)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            TaskModel task = tasks.FirstOrDefault(x => x.TaskId == id);
+            tasks.Remove(task);
+            return RedirectToAction(nameof(Index));
+        }
+        //Get: Task/Done
+        public ActionResult Done(int id)
+        {
+            TaskModel task = tasks.FirstOrDefault(x => x.TaskId == id);
+            task.Done = true;
+            return RedirectToAction(nameof(Index));
         }
     }
 }
