@@ -29,10 +29,13 @@ namespace TaskManager
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<TaskManagerContext>(options => options.UseMySQL(Configuration.GetConnectionString("TaskManagerDatabase")));
+            var serverVersion = new MySqlServerVersion(new Version(10,4,21));
+            services.AddDbContext<TaskManagerContext>(options => options.UseMySql(Configuration.GetConnectionString("TaskManagerDatabase"),serverVersion));
             services.AddTransient<ITaskRepository, TaskRepository>();
             services.AddControllersWithViews();
             services.AddRazorPages();
+            services.AddIdentity<IdentityUser, IdentityRole>()
+            .AddEntityFrameworkStores<TaskManagerContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
